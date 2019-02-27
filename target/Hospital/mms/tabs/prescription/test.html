@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+        function change() {
+            var pids = document.getElementById("pids");
+            alert(document.getElementById("pids").value);
+        }
+    </script>
+</head>
+<body>
+
+   <form>
+       <select id="pids" onchange="change()">
+           <option value="1">1</option>
+           <option value="2">2</option>
+           <option value="3">3</option>
+           <option value="4">4</option>
+       </select>
+   </form>
+
+</body>
+</html>
+
+<!--<html>-->
+<!--<head>-->
+    <!--<script>-->
+        <!--function test(){-->
+            <!--alert(document.getElementById("test").value);-->
+        <!--}-->
+    <!--</script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<select id="test" onchange="test()">-->
+    <!--<option> &#45;&#45; </option>-->
+    <!--<option value ="1">1</option>-->
+    <!--<option value ="2">2</option>-->
+<!--</select>-->
+<!--</body>-->
+<!--</html>-->

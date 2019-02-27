@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div id="form-box" class="row col-md-6">
+        <div class="row">
+            <form class="form-horizontal" action="/RegisterValidateServlet" method="post">
+                <fieldset>
+                    <legend>用户注册</legend>
+                    <div class="form-group">
+                        <label for="username" class="control-label col-md-2">用户名:</label>
+                        <div class="col-md-6 has-feedback" id="username-box">
+                            <input type="text" class="form-control" id="username" name="username" required>
+                            <span id="user-exists" class="glyphicon form-control-feedback"></span>
+                        </div>
+                        <p id="username-help" class="help-block"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="control-label col-md-2">密码:</label>
+                        <div class="col-md-6 ">
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password2" class="control-label col-md-2">确认密码:</label>
+                        <div class="col-md-6 has-feedback" id="password2-box">
+                            <input type="password" class="form-control" id="password2" name="password2" required>
+                            <span id="miss-matching" class="glyphicon form-control-feedback"></span>
+                        </div>
+                        <p id="password2-help" class="help-block"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-6 col-md-push-2">
+                            <input type="submit" class="btn btn-info" value="提交">
+                    </div>
+                </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        /*这个可以防止浏览器后退时候图片不刷新*/
+        $("#identify-code").prop("src", "/IdentifyingCodeServlet?" + new Date().getTime());
+
+        var $form = $("form");
+
+        /*点击框自动清空内容*/
+        $form.on("click", ":input[type!=submit]", function () {
+            $(this).prop("value", "");
+        });
+
+        /*添加勾这个图标*/
+        function addOK(box, span) {
+            span.removeClass("glyphicon-remove");
+            box.removeClass("has-error");
+            span.addClass("glyphicon-ok");
+            box.addClass("has-success");
+        }
+
+        /*添加×这个图标*/
+        function addRemove(box, span) {
+            span.removeClass("glyphicon-ok");
+            box.removeClass("has-success");
+            span.addClass("glyphicon-remove");
+            box.addClass("has-error");
+        }
+
+        /*两次密码验证*/
+        $("#password2,#password").blur(function () {
+            var password = $("#password").val();
+            var password2 = $("#password2").val();
+            var $missmatchingSpan = $("#miss-matching");
+            var $password2Box = $("#password2-box");
+            var $password2Help = $("#password2-help");
+
+            if (password.trim() === "" || password2.trim() === "" || password2 !== password) {
+                addRemove($password2Box, $missmatchingSpan);
+                $password2Help.html("两次密码不一致");
+            } else {
+                addOK($password2Box, $missmatchingSpan);
+                $password2Help.html("");
+            }
+        });
+
+        /*ajax验证后台用户名是否存在*/
+        $("#username").blur(function () {
+            var username = $("#username").val().trim();
+            if (username !== "") {
+                $.ajax({
+                    url: "RegisterValidateServlet",
+                    type: "post",
+                    data: {
+                        username: username
+                    },
+                    dataType: "text",
+                    success: function (data) {
+                        var $usernameBox = $("#username-box");
+                        var $userExistsSpan = $("#user-exists");
+                        var $usernameHelp = $("#username-help");
+
+                        if (data === "exists") {
+                            addRemove($usernameBox, $userExistsSpan);
+                            $usernameHelp.html("用户名已存在");
+                        } else {
+                            addOK($usernameBox, $userExistsSpan);
+                            $usernameHelp.html("用户名可以用");
+                        }
+                    },
+                    error: function (error) {
+                        alert(error);
+                    }
+                })
+            }
+        });
+
+    })
+</script> </body> </html>

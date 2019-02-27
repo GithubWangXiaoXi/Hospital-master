@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ming.hospital.dao.PrescriptionMapper" >
+    <resultMap id="BaseResultMap" type="Prescription" >
+        <id column="pid" property="pid" jdbcType="BIGINT" />
+        <result column="aid" property="aid" jdbcType="BIGINT" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="medicineMno" property="medicineMno" jdbcType="VARCHAR" />
+        <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <resultMap id="resultMapPrescription" type="Prescription">
+
+        <id column="pid" property="pid" />
+        <result column="description" property="description" />
+        <result column="medicineMno" property="medicineMno" />
+        <result column="createtime" property="createtime" />
+
+        <!--prescription与appointment是1对1的关系，与药品是一对多的关系，进而配置prescription中appointment 和 medicine属性-->
+        <association property="appointment" javaType="Appointment">
+            <id column="aid" property="aid"/>
+            <result column="uid" property="uid"/>
+            <result column="visitTime" property="visittime"/>
+            <result column="did" property="did"/>
+            <result column="name" property="name"/>
+            <result column="idcast" property="idcast"/>
+            <result column="aphone" property="aphone"/>
+            <result column="createtime" property="createtime"/>
+            <result column="updatetime" property="updatetime"/>
+            <result column="state" property="state"/>
+        </association>
+    </resultMap>
+
+    <insert id="updatePrescription" parameterType="Prescription">
+        update prescription
+        set prescription.description = #{description}, prescription.medicineMno = #{medicineMno}
+        where pid = #{pid}
+    </insert>
+
+    <select id="queryPrescriptionByAid" parameterType="Long" resultMap="resultMapPrescription">
+         select p.pid,p.aid,a.name,a.aphone,p.medicineMno,p.description
+         from prescription p
+         INNER JOIN appointment a
+         on a.aid = p.aid
+         where p.aid = #{aid}
+    </select>
+
+    <!--<select id="queryPrescriptionByPid" parameterType="Integer" resultMap="resultMapPrescription">-->
+        <!--select p.pid,a.name,a.aphone,p.medicineMno,p.description-->
+        <!--from prescription p-->
+        <!--LEFT JOIN appointment a-->
+        <!--on p.aid = a.aid-->
+        <!--where p.pid = #{pid}-->
+    <!--</select>-->
+
+    <select id="queryAllPrescription" resultMap="resultMapPrescription">
+        select p.pid,a.name,a.aphone,p.medicineMno,p.description
+        from prescription p
+        LEFT JOIN appointment a
+        on p.aid = a.aid
+    </select>
+
+    <insert id="createPrescriptionAutomated" parameterType="Prescription">
+        insert into prescription(pid,aid,description,medicineName,createtime) VALUES
+		(#{pid},#{aid},#{description},#{medicine},#{createtime})
+    </insert>
+
+    <!--<insert id="insertPrescription" -->
+
+</mapper>
